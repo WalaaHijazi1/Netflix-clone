@@ -51,7 +51,7 @@ export default function GridWithInfiniteScroll({
             .filter((v) => !!v.backdrop_path)
             .map((video, idx) => (
               <Grid
-                key={`${video.id}_${idx}`}
+                key={video.id}
                 item
                 xs={6}
                 sm={3}

@@ -11,6 +11,7 @@ interface DetailType {
   id?: number;
   mediaType?: MEDIA_TYPE;
 }
+
 export interface DetailModalConsumerProps {
   detail: { mediaDetail?: MovieDetail } & DetailType;
   setDetailType: (newDetailType: DetailType) => void;
@@ -25,30 +26,30 @@ export default function DetailModalProvider({
   children: ReactNode;
 }) {
   const location = useLocation();
-  const [detail, setDetail] = useState<
-    { mediaDetail?: MovieDetail } & DetailType
-  >(INITIAL_DETAIL_STATE);
+  const [detail, setDetail] = useState<{ mediaDetail?: MovieDetail } & DetailType>(
+    INITIAL_DETAIL_STATE
+  );
 
   const [getAppendedVideos] = useLazyGetAppendedVideosQuery();
 
   const handleChangeDetail = useCallback(
-    async (newDetailType: { mediaType?: MEDIA_TYPE; id?: number }) => {
+    async (newDetailType: DetailType) => {
       if (!!newDetailType.id && newDetailType.mediaType) {
         const response = await getAppendedVideos({
           mediaType: newDetailType.mediaType,
-          id: newDetailType.id as number,
+          id: newDetailType.id,  // no assertion needed here
         }).unwrap();
         setDetail({ ...newDetailType, mediaDetail: response });
       } else {
         setDetail(INITIAL_DETAIL_STATE);
       }
     },
-    []
+    [getAppendedVideos]
   );
 
   useEffect(() => {
     setDetail(INITIAL_DETAIL_STATE);
-  }, [location.pathname, setDetail]);
+  }, [location.pathname]);
 
   return (
     <Provider value={{ detail, setDetailType: handleChangeDetail }}>

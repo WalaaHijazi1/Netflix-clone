@@ -19,6 +19,7 @@ export default function withPagination(
     const itemKey = genre.id ?? (genre as CustomGenre).apiString;
     const mediaState = useAppSelector((state) => state.discover[mediaType]);
     const pageState = mediaState ? mediaState[itemKey] : undefined;
+
     const [getVideosByMediaTypeAndGenreId] =
       useLazyGetVideosByMediaTypeAndGenreIdQuery();
     const [getVideosByMediaTypeAndCustomGenre] =
@@ -28,7 +29,7 @@ export default function withPagination(
       if (!mediaState || !pageState) {
         dispatch(initiateItem({ mediaType, itemKey }));
       }
-    }, [mediaState, pageState]);
+    }, [dispatch, mediaState, pageState, mediaType, itemKey]);
 
     useEffect(() => {
       if (pageState && pageState.page === 0) {
@@ -36,28 +37,31 @@ export default function withPagination(
       }
     }, [pageState]);
 
-    const handleNext = useCallback((page: number) => {
-      if (genre.id) {
-        getVideosByMediaTypeAndGenreId({
-          mediaType,
-          genreId: genre.id,
-          page,
-        });
-      } else {
-        getVideosByMediaTypeAndCustomGenre({
-          mediaType,
-          apiString: (genre as CustomGenre).apiString,
-          page,
-        });
-      }
-      // dispatch(setNextPage({ mediaType, itemKey }));
-    }, []);
+    const handleNext = useCallback(
+      (page: number) => {
+        if (genre.id) {
+          getVideosByMediaTypeAndGenreId({
+            mediaType,
+            genreId: genre.id,
+            page,
+          });
+        } else {
+          getVideosByMediaTypeAndCustomGenre({
+            mediaType,
+            apiString: (genre as CustomGenre).apiString,
+            page,
+          });
+        }
+      },
+      [genre, mediaType, getVideosByMediaTypeAndGenreId, getVideosByMediaTypeAndCustomGenre]
+    );
 
     if (pageState) {
       return (
         <Component genre={genre} data={pageState} handleNext={handleNext} />
       );
     }
+
     return <MainLoadingScreen />;
   };
 }

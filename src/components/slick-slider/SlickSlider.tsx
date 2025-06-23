@@ -169,7 +169,7 @@ export default function SlickSlider({ data, genre }: SlickSliderProps) {
                 sx={{ display: "inline", color: "success.main" }}
               >
                 {"Explore All".split("").map((letter, index) => (
-                  <motion.span key={index} variants={varFadeIn}>
+                  <motion.span key={`${letter}-${index}`} variants={varFadeIn}>
                     {letter}
                   </motion.span>
                 ))}
