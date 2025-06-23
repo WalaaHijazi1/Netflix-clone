@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import Slider, { Settings } from "react-slick";
 import { motion } from "framer-motion";
 
@@ -52,7 +52,6 @@ const StyledSlider = styled(Slider)(
 interface SlideItemProps {
   item: Movie;
 }
-
 function SlideItem({ item }: SlideItemProps) {
   return (
     <Box sx={{ pr: { xs: 0.5, sm: 1 } }}>
@@ -74,13 +73,20 @@ export default function SlickSlider({ data, genre }: SlickSliderProps) {
   const [isEnd, setIsEnd] = useState(false);
   const theme = useTheme();
 
-  const beforeChange = async (currentIndex: number, nextIndex: number) => {
-    if (currentIndex < nextIndex) {
-      setActiveSlideIndex(nextIndex);
-    } else if (currentIndex > nextIndex) {
-      setIsEnd(false);
-    }
+  // Pre-generate a stable array of {id, letter} for the animation
+  const exploreLetters = useMemo(
+    () =>
+      "Explore All"
+        .split("")
+        .map((letter, idx) => ({ id: `explore-${idx}`, letter })),
+    []
+  );
+
+  const beforeChange = (_: number, nextIndex: number) => {
     setActiveSlideIndex(nextIndex);
+    if (nextIndex === data.results.length - 1) {
+      setIsEnd(true);
+    }
   };
 
   const settings: Settings = {
@@ -92,44 +98,15 @@ export default function SlickSlider({ data, genre }: SlickSliderProps) {
     slidesToScroll: 6,
     beforeChange,
     responsive: [
-      {
-        breakpoint: 1536,
-        settings: {
-          slidesToShow: 5,
-          slidesToScroll: 5,
-        },
-      },
-      {
-        breakpoint: 1200,
-        settings: {
-          slidesToShow: 4,
-          slidesToScroll: 4,
-        },
-      },
-      {
-        breakpoint: 900,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 3,
-        },
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 2,
-        },
-      },
+      { breakpoint: 1536, settings: { slidesToShow: 5, slidesToScroll: 5 } },
+      { breakpoint: 1200, settings: { slidesToShow: 4, slidesToScroll: 4 } },
+      { breakpoint: 900, settings: { slidesToShow: 3, slidesToScroll: 3 } },
+      { breakpoint: 600, settings: { slidesToShow: 2, slidesToScroll: 2 } },
     ],
   };
 
-  const handlePrevious = () => {
-    sliderRef.current?.slickPrev();
-  };
-
-  const handleNext = () => {
-    sliderRef.current?.slickNext();
-  };
+  const handlePrevious = () => sliderRef.current?.slickPrev();
+  const handleNext = () => sliderRef.current?.slickNext();
 
   return (
     <Box sx={{ overflow: "hidden", height: "100%", zIndex: 1 }}>
@@ -144,18 +121,11 @@ export default function SlickSlider({ data, genre }: SlickSliderProps) {
             <NetflixNavigationLink
               variant="h5"
               to={`/genre/${
-                genre.id || genre.name.toLowerCase().replace(" ", "_")
+                genre.id ?? genre.name.toLowerCase().replace(" ", "_")
               }`}
-              sx={{
-                display: "inline-block",
-                fontWeight: 700,
-              }}
-              onMouseOver={() => {
-                setShowExplore(true);
-              }}
-              onMouseLeave={() => {
-                setShowExplore(false);
-              }}
+              sx={{ display: "inline-block", fontWeight: 700 }}
+              onMouseOver={() => setShowExplore(true)}
+              onMouseLeave={() => setShowExplore(false)}
             >
               {`${genre.name} Movies `}
               <MotionContainer
@@ -163,8 +133,8 @@ export default function SlickSlider({ data, genre }: SlickSliderProps) {
                 initial="initial"
                 sx={{ display: "inline", color: "success.main" }}
               >
-                {"Explore All".split("").map((letter, index) => (
-                  <motion.span key={`${letter}-${index}`} variants={varFadeIn}>
+                {exploreLetters.map(({ id, letter }) => (
+                  <motion.span key={id} variants={varFadeIn}>
                     {letter}
                   </motion.span>
                 ))}
