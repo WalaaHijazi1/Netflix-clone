@@ -9,6 +9,6 @@ spec:
   selector:
     app: netflix-app
   ports:
-  - port: 80
-    targetPort: 80
-    nodePort: 30007
+    - port: 80              # The port exposed inside the cluster
+      targetPort: 3000      # Port inside the container
+      nodePort: 30007       # External port exposed on the node (EC2 VM)
