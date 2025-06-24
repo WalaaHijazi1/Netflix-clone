@@ -18,6 +18,4 @@ spec:
       - name: netflix-app
         image: walaahij/netflix:latest
         ports:
-          - port: 80
-            targetPort: 3000
-            nodePort: 30007
+          - containerPort: 3000
