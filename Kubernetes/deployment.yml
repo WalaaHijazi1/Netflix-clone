@@ -20,7 +20,7 @@ spec:
         ports:
           - name: metrics  # Required for ServiceMonitor
             containerPort: 3000
-          readinessProbe:
-            httpGet:
-              path: /metrics
-              port: metrics
+        readinessProbe:
+          httpGet:
+            path: /metrics
+            port: metrics
