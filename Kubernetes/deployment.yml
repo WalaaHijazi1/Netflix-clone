@@ -18,9 +18,6 @@ spec:
       - name: netflix-app
         image: walaahij/netflix:latest
         ports:
-          - name: metrics  # Required for ServiceMonitor
-            containerPort: 3000
-        readinessProbe:
-          httpGet:
-            path: /metrics
-            port: metrics
+        - containerPort: 80
+
+        
