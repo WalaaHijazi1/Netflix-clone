@@ -18,6 +18,5 @@ spec:
       - name: netflix-app
         image: walaahij/netflix:latest
         ports:
-        - containerPort: 80
-
-        
+        - containerPort: 80          # your app port   
+        - containerPort: 3000       # metrics port
