@@ -26,7 +26,7 @@ RUN rm -rf ./*
 COPY --from=builder /app/dist .
 
 # Copy custom NGINX config with /stub_status
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose NGINX port
 EXPOSE 80
