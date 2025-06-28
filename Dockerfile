@@ -12,22 +12,23 @@ ARG TMDB_V3_API_KEY
 ENV VITE_APP_TMDB_V3_API_KEY=${TMDB_V3_API_KEY}
 ENV VITE_APP_API_ENDPOINT_URL="https://api.themoviedb.org/3"
 
+#  Build the frontend
 RUN yarn build
 
 # === Stage 2: Serve with NGINX and enable /stub_status ===
 FROM nginx:stable-alpine
 
-# Remove default content
+# Remove default NGINX html
 WORKDIR /usr/share/nginx/html
 RUN rm -rf ./*
 
 # Copy built frontend
 COPY --from=builder /app/dist .
 
-# Copy custom nginx config
+# Copy custom NGINX config with /stub_status
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose default port
+# Expose NGINX port
 EXPOSE 80
 
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
