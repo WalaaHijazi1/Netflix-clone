@@ -18,5 +18,10 @@ spec:
         - name: netflix-app
           image: walaahij/netflix:latest
           ports:
-            - containerPort: 80       # main app
-            - containerPort: 9111     # metrics
+            - containerPort: 80
+        - name: nginx-exporter
+          image: nginx/nginx-prometheus-exporter:0.11.0
+          args:
+            - '-nginx.scrape-uri=http://localhost:80/stub_status'
+          ports:
+            - containerPort: 9111
