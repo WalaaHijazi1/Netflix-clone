@@ -6,6 +6,11 @@ metadata:
     app: netflix-app
 spec:
   replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: netflix-app
@@ -23,6 +28,12 @@ spec:
             - name: nginx-config-volume
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
+          startupProbe:
+            httpGet:
+              path: /
+              port: 80
+            failureThreshold: 30  # 30 * 10 = 300 seconds (5 minutes)
+            periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /
@@ -36,11 +47,17 @@ spec:
             - '-nginx.scrape-uri=http://localhost:80/stub_status'
           ports:
             - containerPort: 9111
+          startupProbe:
+            httpGet:
+              path: /metrics
+              port: 9111
+            failureThreshold: 30
+            periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /metrics
               port: 9111
-            initialDelaySeconds: 10
+            initialDelaySeconds: 30  # Longer initial delay for exporter
             periodSeconds: 5
 
       volumes:
