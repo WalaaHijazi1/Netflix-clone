@@ -19,13 +19,20 @@ spec:
           image: walaahij/netflix:latest
           ports:
             - containerPort: 80
-
+          volumeMounts:
+            - name: nginx-config-volume
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
         - name: nginx-exporter
           image: nginx/nginx-prometheus-exporter:0.11.0
           args:
-            - '--nginx.scrape-uri=$(NGINX_STATUS_URL)'
+            - '-nginx.scrape-uri=http://localhost:80/stub_status'
           ports:
             - containerPort: 9111
           env:
             - name: NGINX_STATUS_URL
               value: http://127.0.0.1/stub_status
+      volumes:
+        - name: nginx-config-volume
+          configMap:
+            name: nginx-config
