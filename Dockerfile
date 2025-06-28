@@ -15,7 +15,7 @@ ENV VITE_APP_API_ENDPOINT_URL="https://api.themoviedb.org/3"
 # Build the frontend
 RUN yarn build
 
-# === Stage 2: Serve with NGINX ===
+# === Stage 2: Serve with NGINX and support Prometheus ===
 FROM nginx:stable-alpine
 
 # Remove default NGINX html
@@ -25,7 +25,11 @@ RUN rm -rf ./*
 # Copy built frontend
 COPY --from=builder /app/dist .
 
-# Expose NGINX port
-EXPOSE 80
+# Set custom NGINX config via Kubernetes ConfigMap at runtime
+# NOTE: Do NOT COPY nginx.conf here; it will be mounted by K8s to /etc/nginx/nginx.conf
 
+# Expose app and metrics ports
+EXPOSE 80 9111
+
+# Start NGINX in foreground
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
