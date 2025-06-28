@@ -21,17 +21,28 @@ spec:
             - containerPort: 80
           volumeMounts:
             - name: nginx-config-volume
-              mountPath: /etc/nginx/nginx.conf   # <-- mount the full main config here
+              mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
         - name: nginx-exporter
           image: nginx/nginx-prometheus-exporter:0.11.0
           args:
             - '-nginx.scrape-uri=http://localhost:80/stub_status'
           ports:
             - containerPort: 9111
-          env:
-            - name: NGINX_STATUS_URL
-              value: http://127.0.0.1/stub_status
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: 9111
+            initialDelaySeconds: 10
+            periodSeconds: 5
+
       volumes:
         - name: nginx-config-volume
           configMap:
