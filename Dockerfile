@@ -1,3 +1,4 @@
+# Use Node for both build and runtime
 FROM node:20-alpine AS builder
 WORKDIR /app
 
@@ -13,6 +14,16 @@ RUN yarn build
 
 # Install express and prom-client
 RUN yarn add express prom-client
+
+# Create a separate runtime stage
+FROM node:20-alpine
+WORKDIR /app
+
+# Copy build artifacts from builder stage
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/server.js ./
+COPY --from=builder /app/metrics.js ./
 
 EXPOSE 3001
 CMD ["node", "server.js"]
