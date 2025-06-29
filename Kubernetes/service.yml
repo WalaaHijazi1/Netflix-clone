@@ -9,11 +9,6 @@ spec:
   selector:
     app: netflix-app
   ports:
-    - name: http
-      port: 80
+    - port: 80
       targetPort: 80
       nodePort: 30007
-    - name: metrics
-      port: 3001
-      targetPort: 3001
-      nodePort: 30008
