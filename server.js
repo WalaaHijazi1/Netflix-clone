@@ -3,7 +3,7 @@ const path = require('path');
 const register = require('./metrics');
 
 const app = express();
-const PORT = 3000;
+const PORT = 3001;
 
 // Serve frontend build (replace 'dist' with your actual build output dir)
 app.use(express.static(path.join(__dirname, 'dist')));

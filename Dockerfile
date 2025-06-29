@@ -14,5 +14,5 @@ RUN yarn build
 # Install express and prom-client
 RUN yarn add express prom-client
 
-EXPOSE 3000
+EXPOSE 3001
 CMD ["node", "server.js"]
