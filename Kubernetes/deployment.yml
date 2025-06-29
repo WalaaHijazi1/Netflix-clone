@@ -21,4 +21,4 @@ spec:
             - name: http
               containerPort: 80
             - name: metrics
-              containerPort: 3000
+              containerPort: 3001
