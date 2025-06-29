@@ -6,11 +6,6 @@ metadata:
     app: netflix-app
 spec:
   replicas: 2
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
   selector:
     matchLabels:
       app: netflix-app
@@ -20,47 +15,7 @@ spec:
         app: netflix-app
     spec:
       containers:
-        - name: netflix-app
-          image: walaahij/netflix:latest
-          ports:
-            - containerPort: 80
-          volumeMounts:
-            - name: nginx-config-volume
-              mountPath: /etc/nginx/nginx.conf
-              subPath: nginx.conf
-          startupProbe:
-            httpGet:
-              path: /
-              port: 80
-            failureThreshold: 30
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 80
-            initialDelaySeconds: 5
-            periodSeconds: 5
-
-        - name: nginx-exporter
-          image: nginx/nginx-prometheus-exporter:0.11.0
-          args:
-            - '-nginx.scrape-uri=http://localhost:80/stub_status'
-          ports:
-            - containerPort: 9111
-          startupProbe:
-            httpGet:
-              path: /metrics
-              port: 9111
-            failureThreshold: 30
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /metrics
-              port: 9111
-            initialDelaySeconds: 30
-            periodSeconds: 5
-
-      volumes:
-        - name: nginx-config-volume
-          configMap:
-            name: nginx-config
+      - name: netflix-app
+        image: walaahij/netflix:latest
+        ports:
+        - containerPort: 80
